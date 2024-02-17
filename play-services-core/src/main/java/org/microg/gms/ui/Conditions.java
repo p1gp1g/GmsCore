@@ -29,7 +29,6 @@ import androidx.core.content.ContextCompat;
 
 import com.google.android.gms.R;
 
-import org.microg.gms.gcm.GcmPrefs;
 import org.microg.tools.ui.Condition;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
@@ -42,27 +41,6 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 import static android.os.Build.VERSION.SDK_INT;
 
 public class Conditions {
-    public static final Condition GCM_BATTERY_OPTIMIZATIONS = new Condition.Builder()
-            .title(R.string.cond_gcm_bat_title)
-            .summary(R.string.cond_gcm_bat_summary)
-            .evaluation(new Condition.Evaluation() {
-                @Override
-                public boolean isActive(Context context) {
-                    if (SDK_INT < 23) return false;
-                    if (!GcmPrefs.get(context).isEnabled()) return false;
-                    PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
-                    return !pm.isIgnoringBatteryOptimizations(context.getPackageName());
-                }
-            })
-            .firstAction(R.string.cond_gcm_bat_action, new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (SDK_INT < 23) return;
-                    Intent intent = new Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS);
-                    intent.setData(Uri.parse("package:" + v.getContext().getPackageName()));
-                    v.getContext().startActivity(intent);
-                }
-            }).build();
 
     private static final String[] REQUIRED_PERMISSIONS = new String[]{ACCESS_COARSE_LOCATION, ACCESS_FINE_LOCATION, READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE, GET_ACCOUNTS, READ_PHONE_STATE};
     public static final Condition PERMISSIONS = new Condition.Builder()

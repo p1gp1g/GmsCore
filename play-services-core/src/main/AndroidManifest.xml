@@ -62,18 +62,6 @@
         android:protectionLevel="dangerous" />
 
     <permission
-        android:name="com.google.android.gms.permission.AD_ID"
-        android:label="@string/perm_ad_id_label"
-        android:description="@string/perm_ad_id_description"
-        android:protectionLevel="normal" />
-    <permission
-        android:name="com.google.android.gms.permission.AD_ID_NOTIFICATION"
-        android:label="@string/perm_ad_id_notification_label"
-        android:description="@string/perm_ad_id_notification_description"
-        android:protectionLevel="normal" />
-
-
-    <permission
         android:name="com.google.android.gms.auth.api.phone.permission.SEND"
         android:protectionLevel="signature" />
 
@@ -141,51 +129,6 @@
 
         <library android:name="com.google.android.gms" />
 
-        <!-- Provision -->
-
-        <service
-            android:name="org.microg.gms.provision.ProvisionService"
-            android:exported="true"
-            android:permission="org.microg.gms.PROVISION" />
-
-        <!-- Location -->
-
-        <activity
-            android:name="org.microg.gms.ui.PlacePickerActivity"
-            android:exported="true"
-            android:label="@string/pick_place_title"
-            android:process=":ui"
-            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
-            <intent-filter>
-                <action android:name="com.google.android.gms.location.places.ui.PICK_PLACE" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-
-        <service android:name="org.microg.gms.places.GeoDataService">
-            <intent-filter>
-                <action android:name="com.google.android.gms.location.places.GeoDataApi" />
-                <action android:name="com.google.android.gms.location.places.PlacesApi" />
-            </intent-filter>
-        </service>
-
-        <service android:name="org.microg.gms.places.PlaceDetectionService">
-            <intent-filter>
-                <action android:name="com.google.android.gms.location.places.PlaceDetectionApi" />
-            </intent-filter>
-        </service>
-
-        <service android:name="org.microg.gms.wearable.location.WearableLocationService">
-            <intent-filter>
-                <action android:name="com.google.android.gms.wearable.MESSAGE_RECEIVED" />
-                <data
-                    android:host="*"
-                    android:pathPrefix="/com/google/android/location/fused/wearable"
-                    android:scheme="wear" />
-            </intent-filter>
-        </service>
-
         <!-- Services Framework -->
 
         <provider
@@ -204,165 +147,7 @@
             android:readPermission="android.permission.SUBSCRIBED_FEEDS_READ"
             android:writePermission="android.permission.SUBSCRIBED_FEEDS_WRITE" />
 
-        <!-- Device Checkin -->
-
-        <service android:name="org.microg.gms.checkin.CheckinService">
-            <intent-filter>
-                <action android:name="com.google.android.gms.checkin.BIND_TO_SERVICE" />
-            </intent-filter>
-        </service>
-
-        <receiver android:name="org.microg.gms.checkin.TriggerReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.AIRPLANE_MODE" />
-
-                <action android:name="android.server.checkin.CHECKIN" />
-
-                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
-                <action android:name="android.intent.action.PACKAGE_RESTARTED" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
-
-                <category android:name="android.server.checkin.CHECKIN" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.provider.Telephony.SECRET_CODE" />
-
-                <data
-                    android:host="2432546"
-                    android:scheme="android_secret_code" />
-            </intent-filter>
-        </receiver>
-
-        <!-- Cloud Messaging -->
-        <service
-            android:name="org.microg.gms.gcm.PushRegisterService"
-            android:process=":persistent">
-            <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.REGISTER" />
-                <action android:name="com.google.android.c2dm.intent.UNREGISTER" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </service>
-
-        <receiver
-            android:name="org.microg.gms.gcm.PushRegisterReceiver"
-            android:process=":persistent">
-            <intent-filter>
-                <action android:name="com.google.iid.TOKEN_REQUEST" />
-            </intent-filter>
-        </receiver>
-
-        <service
-            android:name="org.microg.gms.gcm.McsService"
-            android:process=":persistent" />
-
-        <receiver
-            android:name="org.microg.gms.gcm.SendReceiver"
-            android:process=":persistent">
-            <intent-filter>
-                <action android:name="com.google.android.gcm.intent.SEND" />
-            </intent-filter>
-        </receiver>
-
-        <receiver
-            android:name="org.microg.gms.gcm.ServiceInfoReceiver"
-            android:process=":persistent" />
-
-        <receiver
-            android:name="org.microg.gms.gcm.TriggerReceiver"
-            android:process=":persistent">
-            <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.AIRPLANE_MODE" />
-                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-                <action android:name="android.net.conn.BACKGROUND_DATA_SETTING_CHANGED" />
-
-                <action android:name="org.microg.gms.gcm.RECONNECT" />
-
-                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
-                <action android:name="android.intent.action.PACKAGE_RESTARTED" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.provider.Telephony.SECRET_CODE" />
-
-                <data
-                    android:host="42678278"
-                    android:scheme="android_secret_code" />
-            </intent-filter>
-        </receiver>
-
-        <receiver
-            android:name="org.microg.gms.gcm.UnregisterReceiver"
-            android:process=":persistent">
-            <intent-filter>
-                <action android:name="android.intent.action.PACKAGE_DATA_CLEARED" />
-                <action android:name="android.intent.action.PACKAGE_FULLY_REMOVED" />
-                <action android:name="android.intent.action.PACKAGE_REMOVED" />
-
-                <data android:scheme="package" />
-            </intent-filter>
-        </receiver>
-
-        <!-- Car -->
-
-        <service android:name="org.microg.gms.car.CarService">
-            <intent-filter>
-                <action android:name="com.google.android.gms.car.service.START" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </service>
-
-        <!-- People -->
-
-        <service android:name="org.microg.gms.people.PeopleService">
-            <intent-filter>
-                <action android:name="com.google.android.gms.people.service.START" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </service>
-
-        <service
-            android:name="org.microg.gms.people.ContactSyncService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.content.SyncAdapter" />
-            </intent-filter>
-            <meta-data
-                android:name="android.content.SyncAdapter"
-                android:resource="@xml/contact_syncadapter" />
-        </service>
-
-        <!-- Wearable -->
-
-        <service android:name="org.microg.gms.wearable.WearableService">
-            <intent-filter>
-                <action android:name="com.google.android.gms.wearable.BIND" />
-            </intent-filter>
-        </service>
-
         <!-- Auth -->
-
-        <service android:name="org.microg.gms.auth.loginservice.GoogleLoginService">
-            <intent-filter>
-                <action android:name="android.accounts.AccountAuthenticator" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="com.google.android.gsf.action.GET_GLS" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.accounts.AccountAuthenticator"
-                android:resource="@xml/authenticator" />
-            <meta-data
-                android:name="android.accounts.AccountAuthenticator.customTokens"
-                android:value="1" />
-        </service>
 
         <activity
             android:name="org.microg.tools.AccountPickerActivity"
@@ -376,142 +161,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-
-        <activity
-            android:name="org.microg.gms.auth.login.LoginActivity"
-            android:configChanges="keyboardHidden|keyboard|orientation|screenSize"
-            android:exported="true"
-            android:process=":ui"
-            android:theme="@style/Theme.LoginBlue">
-            <intent-filter>
-                <action android:name="com.google.android.gms.auth.login.LOGIN" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-
-        <activity
-            android:name="org.microg.gms.auth.AskPermissionActivity"
-            android:excludeFromRecents="true"
-            android:exported="true"
-            android:process=":ui"
-            android:theme="@style/Theme.AppCompat.DayNight.Dialog" />
-
-        <service
-            android:name=".auth.GetToken"
-            android:exported="true" />
-
-        <activity
-            android:name=".auth.TokenActivity"
-            android:exported="true"
-            android:process=":ui" />
-
-        <provider
-            android:name="org.microg.gms.auth.AccountContentProvider"
-            android:authorities="com.google.android.gms.auth.accounts"
-            android:exported="true" />
-
-        <activity
-            android:name="org.microg.gms.auth.credentials.CredentialPickerActivity"
-            android:process=":ui">
-            <intent-filter>
-                <action android:name="com.google.android.gms.auth.api.credentials.PICKER" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-
-        <service android:name="org.microg.gms.auth.credentials.CredentialsService">
-            <intent-filter>
-                <action android:name="com.google.android.gms.auth.api.credentials.service.START" />
-            </intent-filter>
-        </service>
-
-        <service android:name="org.microg.gms.auth.proxy.AuthProxyService">
-            <intent-filter>
-                <action android:name="com.google.android.gms.auth.service.START" />
-            </intent-filter>
-        </service>
-
-        <service android:name="org.microg.gms.auth.appcert.AppCertService">
-            <intent-filter>
-                <action android:name="com.google.android.gms.auth.be.appcert.AppCertService" />
-            </intent-filter>
-        </service>
-
-        <service android:name="org.microg.gms.credential.CredentialManagerService">
-            <intent-filter>
-                <action android:name="com.google.android.gms.credential.manager.service.firstparty.START" />
-            </intent-filter>
-        </service>
-
-        <activity
-            android:name="org.microg.gms.auth.signin.AuthSignInActivity"
-            android:theme="@style/Theme.AppCompat.DayNight.Dialog.Alert.NoActionBar"
-            android:process=":ui"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.google.android.gms.auth.GOOGLE_SIGN_IN" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-
-        <service android:name="org.microg.gms.signin.SignInService">
-            <intent-filter>
-                <action android:name="com.google.android.gms.signin.service.START" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </service>
-
-        <service android:name="org.microg.gms.auth.signin.AuthSignInService">
-            <intent-filter>
-                <action android:name="com.google.android.gms.auth.api.signin.service.START" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </service>
-
-        <service
-            android:name="org.microg.gms.auth.signin.SignInConfigurationService"
-            android:exported="false" />
-
-        <service android:name="org.microg.gms.auth.credentials.identity.IdentitySignInService">
-            <intent-filter>
-                <action android:name="com.google.android.gms.auth.api.identity.service.signin.START" />
-            </intent-filter>
-        </service>
-
-        <!-- Games -->
-
-        <activity
-            android:name="org.microg.gms.games.UpgradeActivity"
-            android:process=":ui"
-            android:theme="@style/Theme.AppCompat.DayNight.Dialog">
-            <intent-filter>
-                <action android:name="com.google.android.gms.games.PLAY_GAMES_UPGRADE" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-
-        <service
-            android:name="org.microg.gms.games.GamesService"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.google.android.gms.games.service.START" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </service>
-
-        <service
-            android:name="org.microg.gms.games.GamesConnectService"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="com.google.android.gms.games.internal.connect.service.START" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </service>
-
-        <service
-            android:name="org.microg.gms.games.GamesConfigurationService"
-            android:exported="false" />
 
         <!-- Chimera -->
         <provider
@@ -610,12 +259,6 @@
         </activity-alias>
 
         <activity
-            android:name="org.microg.gms.ui.AskPushPermission"
-            android:excludeFromRecents="true"
-            android:process=":ui"
-            android:theme="@style/Theme.AppCompat.DayNight.Dialog.Alert.NoActionBar" />
-
-        <activity
             android:name="org.microg.gms.ui.GoogleMoreFragment$AsActivity"
             android:label="@string/gms_settings_name"
             android:process=":ui"
@@ -626,11 +269,6 @@
             android:label="@string/self_check_title"
             android:process=":ui"
             android:taskAffinity="org.microg.gms.settings" />
-
-        <activity
-            android:name="org.microg.gms.ui.LegacyAccountSettingsActivity"
-            android:process=":ui"
-            android:taskAffinity="org.microg.gms.settings"></activity>
 
         <activity
             android:name="org.microg.gms.accountsettings.ui.MainActivity"
@@ -770,56 +408,20 @@
                 <action android:name="com.google.android.gms.analytics.service.START" />
             </intent-filter>
         </service>
-        <service android:name="org.microg.gms.playlog.PlayLogService">
-            <intent-filter>
-                <action android:name="com.google.android.gms.playlog.service.START" />
-            </intent-filter>
-        </service>
+
         <service
             android:name=".gcm.http.GoogleHttpService"
             android:exported="true" />
 
-        <service android:name="org.microg.gms.ads.GService">
-            <intent-filter>
-                <action android:name="com.google.android.gms.ads.gservice.START" />
-            </intent-filter>
-        </service>
         <service android:name="org.microg.gms.feedback.FeedbackService">
             <intent-filter>
                 <action android:name="com.google.android.gms.feedback.internal.IFeedbackService" />
-            </intent-filter>
-        </service>
-        <service android:name="org.microg.gms.clearcut.ClearcutLoggerService">
-            <intent-filter>
-                <action android:name="com.google.android.gms.clearcut.service.START" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </service>
-        <service android:name="org.microg.gms.drive.api.DriveApiService">
-            <intent-filter>
-                <action android:name="com.google.android.gms.drive.ApiService.START" />
-                <action android:name="com.google.android.gms.drive.ApiService.STOP" />
-                <action android:name="com.google.android.gms.drive.ApiService.RESET_AFTER_BOOT" />
-
-                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </service>
         <service android:name="org.microg.gms.reminders.RemindersService">
             <intent-filter>
                 <action android:name="com.google.android.gms.reminders.service.START" />
                 <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </service>
-
-        <service android:name="org.microg.gms.wallet.PaymentService">
-            <intent-filter>
-                <action android:name="com.google.android.gms.wallet.service.BIND" />
-            </intent-filter>
-        </service>
-
-        <service android:name="org.microg.gms.firebase.dynamiclinks.DynamicLinksService">
-            <intent-filter>
-                <action android:name="com.google.firebase.dynamiclinks.service.START" />
             </intent-filter>
         </service>
 

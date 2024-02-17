@@ -20,7 +20,6 @@ import androidx.webkit.WebViewClientCompat
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import org.microg.gms.auth.AuthManager
 import org.microg.gms.common.Constants.GMS_PACKAGE_NAME
 import org.microg.gms.common.PackageUtils
 import java.net.URLEncoder
@@ -99,21 +98,8 @@ class WebViewHelper(private val activity: AppCompatActivity, private val webView
     }
 
     private fun openWebWithAccount(accountName: String, url: String?) {
-        try {
-            val service = "weblogin:continue=" + URLEncoder.encode(url, "utf-8")
-            val authManager = AuthManager(activity, accountName, GMS_PACKAGE_NAME, service)
-            val authUrl = authManager.requestAuth(false)?.auth
-            if (authUrl?.contains("WILL_NOT_SIGN_IN") == true) {
-                throw RuntimeException("Would not sign in")
-            }
-            Log.d(TAG, "Opening $authUrl")
-            webView.post {
-                loadWebViewUrl(authUrl)
-            }
-        } catch (e: Exception) {
-            Log.w(TAG, "Failed to get weblogin auth.", e)
-            activity.finish()
-        }
+        Log.w(TAG, "Failed to get weblogin auth.")
+        activity.finish()
     }
 
     private fun prepareWebViewSettings(settings: WebSettings) {
