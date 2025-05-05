@@ -144,11 +144,12 @@ class ScreenLockTransportHandler(private val activity: FragmentActivity, callbac
             store.getPublicKey(options.rpId, keyId)
                 ?: throw RequestHandlingException(ErrorCode.INVALID_STATE_ERR)
 
+        val handle = options.registerOptions.user.id
         val name = options.registerOptions.user.name
         val displayName = options.registerOptions.user.displayName
         val icon = options.registerOptions.user.icon
 
-        store.addUserInfo(options.rpId, keyId, name, displayName, icon)
+        store.addUserInfo(options.rpId, keyId, handle, name, displayName, icon)
 
         // We're ignoring the signature object as we don't need it for registration
         val signature = getActiveSignature(options, callerPackage, keyId)
@@ -283,7 +284,7 @@ class ScreenLockTransportHandler(private val activity: FragmentActivity, callbac
                     clientData,
                     authenticatorData.encode(),
                     sig,
-                    null
+                    userInfo?.handle
                 )
             }
 
