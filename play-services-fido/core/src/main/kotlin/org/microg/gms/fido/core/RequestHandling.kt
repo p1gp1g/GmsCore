@@ -34,6 +34,7 @@ class WrongPinException(message: String? = null): Exception(message)
 
 enum class RequestOptionsType { REGISTER, SIGN }
 class UserInfo(
+    val handle: ByteArray? = null,
     val name: String,
     val displayName: String? = null,
     val icon: String? = null

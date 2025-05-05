@@ -528,13 +528,14 @@ abstract class TransportHandler(val transport: Transport, val callback: Transpor
         val assertionResponses = ArrayList<Pair<UserInfo?, suspend () -> AuthenticatorAssertionResponse>>()
 
         for ((response, credentialId) in responses) {
+            val handle = response.user?.id
             var name = response.user?.name
             var displayName = response.user?.displayName
             var icon = response.user?.icon
 
             var userInfo: UserInfo? = null
             if (name != null) {
-                userInfo = UserInfo(name, displayName, icon)
+                userInfo = UserInfo(handle, name, displayName, icon)
             }
 
             val assertionResponse = AuthenticatorAssertionResponse(
@@ -542,7 +543,7 @@ abstract class TransportHandler(val transport: Transport, val callback: Transpor
                 clientData,
                 response.authData,
                 response.signature,
-                null
+                handle
             )
             assertionResponses.add(userInfo to suspend { assertionResponse })
         }

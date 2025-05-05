@@ -164,10 +164,11 @@ class ScreenLockCredentialStore(val context: Context) : SQLiteOpenHelper(context
     companion object {
         const val TAG = "FidoLockStore"
 
-        const val DATABASE_VERSION = 1
+        const val DATABASE_VERSION = 2
 
         const val TABLE_DISPLAY_NAMES = "DISPLAY_NAMES_TABLE"
         const val COLUMN_KEY_ALIAS = "KEY_ALIAS_COLUMN"
+        const val COLUMN_HANDLE = "HANDLE_COLUMN"
         const val COLUMN_NAME = "NAME_COLUMN"
         const val COLUMN_DISPLAY_NAME = "DISPLAY_NAME_COLUMN"
         const val COLUMN_ICON = "ICON_COLUMN"
@@ -184,24 +185,28 @@ class ScreenLockCredentialStore(val context: Context) : SQLiteOpenHelper(context
         if (oldVersion < 1) {
             db.execSQL("CREATE TABLE $TABLE_DISPLAY_NAMES($COLUMN_KEY_ALIAS TEXT NOT NULL, $COLUMN_NAME TEXT NOT NULL, $COLUMN_DISPLAY_NAME TEXT, $COLUMN_ICON TEXT, UNIQUE($COLUMN_KEY_ALIAS) ON CONFLICT REPLACE)")
         }
+        if (oldVersion < 2) {
+            db.execSQL("ALTER TABLE $TABLE_DISPLAY_NAMES ADD COLUMN $COLUMN_HANDLE TEXT")
+        }
     }
 
     fun addUserInfo(rpId: String, keyId: ByteArray, userInfo: UserInfo) {
-        addUserInfo(rpId, keyId, userInfo.name, userInfo.displayName, userInfo.icon)
+        addUserInfo(rpId, keyId, userInfo.handle, userInfo.name, userInfo.displayName, userInfo.icon)
     }
 
-    fun addUserInfo(rpId: String, keyId: ByteArray, name: String, displayName: String? = null, icon: String? = null) = writableDatabase.use {
+    fun addUserInfo(rpId: String, keyId: ByteArray, userHandle: ByteArray?, name: String, displayName: String? = null, icon: String? = null) = writableDatabase.use {
         // Since this function is not called very often, calling cleanDatabase here will probably not
         // slow things down by much, and it will avoid the database growing larger than necessary
         cleanDatabase(it)
 
         // The key alias and display names are both coming from outside sources. Don't trust them
         val keyAlias = getAlias(rpId, keyId)
-        val insertStatement = it.compileStatement("INSERT INTO $TABLE_DISPLAY_NAMES($COLUMN_KEY_ALIAS, $COLUMN_NAME, $COLUMN_DISPLAY_NAME, $COLUMN_ICON) VALUES(?, ?, ?, ?)")
+        val insertStatement = it.compileStatement("INSERT INTO $TABLE_DISPLAY_NAMES($COLUMN_KEY_ALIAS, $COLUMN_NAME, $COLUMN_DISPLAY_NAME, $COLUMN_ICON, $COLUMN_HANDLE) VALUES(?, ?, ?, ?, ?)")
         insertStatement.bindString(1, keyAlias)
         insertStatement.bindString(2, name)
         if (displayName != null) insertStatement.bindString(3, displayName)
         if (icon != null) insertStatement.bindString(4, icon)
+        userHandle?.toBase64()?.let { insertStatement.bindString(5, it) }
         insertStatement.executeInsert()
     }
 
@@ -211,21 +216,23 @@ class ScreenLockCredentialStore(val context: Context) : SQLiteOpenHelper(context
         cleanDatabase(it)
 
         val keyAlias = getAlias(rpId, keyId)
-        val userInfoQuery = it.query(TABLE_DISPLAY_NAMES, arrayOf(COLUMN_NAME, COLUMN_DISPLAY_NAME, COLUMN_ICON), "$COLUMN_KEY_ALIAS = ?", arrayOf(keyAlias), null, null, null, null)
+        val userInfoQuery = it.query(TABLE_DISPLAY_NAMES, arrayOf(COLUMN_NAME, COLUMN_DISPLAY_NAME, COLUMN_ICON, COLUMN_HANDLE), "$COLUMN_KEY_ALIAS = ?", arrayOf(keyAlias), null, null, null, null)
 
         var name: String? = null
         var displayName: String? = null
         var icon: String? = null
+        var handle: ByteArray? = null
         userInfoQuery.use { cursor ->
             if (cursor.moveToNext()) {
                 name = cursor.getString(0)
                 displayName = cursor.getString(1)
                 icon = cursor.getString(2)
+                handle = Base64.decode(cursor.getString(3), Base64.DEFAULT)
             }
         }
 
         if (name != null) {
-            return UserInfo(name!!, displayName, icon)
+            return UserInfo(handle, name!!, displayName, icon)
         } else {
             return null
         }
