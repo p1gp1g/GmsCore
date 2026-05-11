@@ -167,7 +167,11 @@ class UsbTransportHandler(private val context: Context, callback: TransportHandl
                 return handle(options, callerPackage, device, iface, pinRequested, pin)
             } catch (e: CancellationException) {
                 throw e
-            } catch (e: Exception) {
+            } catch (e: MissingPinException) {
+                throw e
+            } catch (e: WrongPinException) {
+                throw e
+            }  catch (e: Exception) {
                 Log.w(TAG, e)
             }
         }
