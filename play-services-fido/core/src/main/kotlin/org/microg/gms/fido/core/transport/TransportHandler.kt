@@ -277,7 +277,8 @@ abstract class TransportHandler(val transport: Transport, val callback: Transpor
             // The specification states that the WebAuthn requireUserVerification option should map to
             // the CTAP2 "uv" flag OR pinAuth/pinProtocol. Therefore, set this flag to false if
             // a pinToken is present
-            userVerification = requireUserVerification && (pinToken == null)
+            userVerification = requireUserVerification && (pinToken == null),
+            userPresence = false
         )
         val extensions = mutableMapOf<String, CBORObject>()
         if (options.authenticationExtensions?.fidoAppIdExtension?.appId != null) {
