@@ -83,7 +83,8 @@ fun CBORObject.decodeAsPublicKeyCredentialParameters() = PublicKeyCredentialPara
 fun PublicKeyCredentialDescriptor.encodeAsCbor() = CBORObject.NewMap().apply {
     set("type", typeAsString.encodeAsCbor())
     set("id", id.encodeAsCbor())
-    set("transports", transports.orEmpty().encodeAsCbor { it.toString().encodeAsCbor() })
+    // Transports are optional, and some older tokens built for CTAP 2.0 will return CBOR parsing errors.
+    // set("transports", transports.orEmpty().encodeAsCbor { it.toString().encodeAsCbor() })
 }
 
 fun CBORObject.decodeAsPublicKeyCredentialDescriptor() = PublicKeyCredentialDescriptor(
